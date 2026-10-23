@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ff7900">
+<title>Celsia internet | Gestiona tu factura</title>
+
+<style>
+:root {
+  --orange: #ff7900;
+  --orange2: #ff6500;
+  --ink: #080808;
+  --navy: #1e3159;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+
+button, a {
+  font: inherit;
+}
+
+/* ENCABEZADO */
+.topbar {
+  height: 42px;
+  background: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: #fff;
+  position: relative;
+  z-index: 10;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+.brand span {
+  color: #111;
+  font-weight: 750;
+}
+
+.menu-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.menu-btn span {
+  height: 4px;
+  width: 30px;
+  background: #fff;
+  border-radius: 2px;
+  display: block;
+}
+
+.menu-panel {
+  display: none;
+  position: absolute;
+  z-index: 15;
+  right: 20px;
+  top: 65px;
+  background: #fff;
+  padding: 18px 22px;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px #0002;
+  min-width: 200px;
+}
+
+.menu-panel.open {
+  display: grid;
+  gap: 14px;
+}
+
+.menu-panel a {
+  color: #111;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* TITULAR PRINCIPAL */
+.intro-hero {
+  min-height: auto;
+  padding: 35px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.intro-hero h1 {
+  font-size: clamp(38px, 8vw, 72px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  max-width: 1000px;
+  margin: 0 auto 20px;
+}
+
+.cursor-divider {
+  width: min(600px, 80vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 38px;
+}
+
+.cursor-divider .line {
+  height: 2px;
+  background: #111;
+  flex: 1;
+}
+
+.cursor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cursor svg {
+  width: 34px;
+  height: 34px;
+  fill: #111;
+}
+
+/* SECCIÓN NARANJA */
+.bill-section {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  background: linear-gradient(105deg, #ff9a00 0%, #ff7900 54%, #ff6500 100%);
+  padding: -17px 47px 11px;
+  color: #fff;
+}
+
+.bill-section::before,
+.bill-section::after {
+  content: "$";
+  position: absolute;
+  color: #ffd43b35;
+  font-size: 330px;
+  font-weight: 300;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bill-section::before {
+  left: -22px;
+  top: -30px;
+  transform: rotate(-12deg);
+}
+
+.bill-section::after {
+  right: -35px;
+  bottom: -110px;
+  transform: rotate(14deg);
+  font-size: 400px;
+}
+
+.bill-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.bill-content h2 {
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.1;
+  font-weight: 600;
+  margin: 0 auto 15px;
+  max-width: 650px;
+}
+
+.bill-content > p:not(.disclaimer) {
+  font-size: clamp(16px, 3.5vw, 24px);
+  font-weight: 300;
+  line-height: 1.4;
+  color: #31200d;
+  margin: 0 auto 30px;
+  max-width: 600px;
+}
+
+/* BOTONES PRINCIPALES */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: min(520px, 95%);
+  min-height: 60px;
+  border-radius: 100px;
+  border: 0;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.15s;
+  background-color: #fff;
+  color: #111;
+}
+
+.action:hover {
+  transform: translateY(-2px);
+}
+
+.action:active,
+.action:focus-visible {
+  background-color: #050505;
+  color: #fff;
+}
+
+.arrow {
+  font-size: 1.1em;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.action:active .arrow,
+.action:focus-visible .arrow {
+  color: var(--orange);
+}
+
+.action.primary {
+  width: min(199px, 85%);
+  min-height: 50px;
+  font-size: 17px;
+}
+
+.disclaimer {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #fff;
+  margin: 20px auto 0;
+  max-width: 600px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* FINANCIACIÓN */
+.finance {
+  position: relative;
+  overflow: hidden;
+  background: #f4f4f4;
+  text-align: center;
+  padding: 50px 20px 60px;
+}
+
+.finance::before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background-image: radial-gradient(circle, #e0e0e0 2px, transparent 2px);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  left: -100px;
+  top: 10px;
+  z-index: 0;
+}
+
+.finance h2 {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(36px, 7vw, 58px);
+  line-height: 1.05;
+  color: #f47716;
+  font-weight: 600;
+  margin: 0 auto 16px;
+  max-width: 600px;
+}
+
+.finance p {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(16px, 3.5vw, 22px);
+  line-height: 1.4;
+  max-width: 600px;
+  margin: 0 auto 35px;
+  color: #333;
+}
+
+.finance-btn-primary {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--orange);
+  color: #111;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  width: min(500px, 95%);
+  margin: 0 auto 12px;
+  transition: transform .15s;
+  border: none;
+  cursor: pointer;
+}
+
+.finance-btn-secondary {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--orange);
+  color: #111;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  width: min(360px, 90%);
+  margin: 0 auto;
+  transition: transform .15s;
+  border: none;
+  cursor: pointer;
+}
+
+.finance-btn-primary:hover,
+.finance-btn-secondary:hover {
+  transform: scale(1.02);
+}
+
+/* PREGUNTAS FRECUENTES */
+.faq-section {
+  text-align: center;
+  padding: 35px 20px 45px;
+  background: #fff;
+}
+
+.faq-section h2 {
+  font-size: clamp(36px, 7vw, 56px);
+  line-height: 1.1;
+  margin: 0 0 15px;
+  color: #111;
+  font-weight: 500;
+}
+
+.faq-section h2 span {
+  color: var(--orange);
+  display: block;
+}
+
+.faq-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  max-width: 500px;
+  margin: 0 auto 18px;
+}
+
+.faq-divider .line {
+  height: 2px;
+  background: #111;
+  flex: 1;
+}
+
+.faq-divider .question-mark {
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.faq-section p {
+  font-size: clamp(16px, 3.5vw, 20px);
+  line-height: 1.4;
+  color: #222;
+  max-width: 550px;
+  margin: 0 auto 25px;
+}
+
+.faq-accordion {
+  max-width: 550px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.faq-item {
+  background: var(--orange);
+  border-radius: 30px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.faq-question .icon {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.faq-answer {
+  display: none;
+  background: #fff;
+  color: #333;
+  padding: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  border: 1px solid #eee;
+  border-top: none;
+  border-radius: 0 0 30px 30px;
+}
+
+.faq-item.active {
+  background: #f4f4f4;
+}
+
+.faq-item.active .faq-question {
+  color: #111;
+}
+
+.faq-item.active .faq-answer {
+  display: block;
+}
+
+/* BOTONES FLOTANTES */
+.float-buttons {
+  position: fixed;
+  right: 15px;
+  bottom: 20px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.float-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 0;
+  box-shadow: 0 3px 12px #0003;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.whatsapp {
+  background: #4caf50;
+  color: #fff;
+  border: 4px solid #8dd56d;
+}
+
+.support {
+  background: #21375f;
+  color: #fff;
+}
+
+.float-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* FOOTER (NEGRO) */
+footer {
+  background: #000;
+  color: #fff;
+  padding: 50px 24px 100px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-brand {
+  font-size: 32px;
+  font-weight: 750;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+  display: block;
+}
+.footer-brand .white { color: #fff; }
+.footer-brand .orange { color: var(--orange); }
+
+.footer-desc {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #ddd;
+  margin-bottom: 25px;
+  max-width: 600px;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.footer-socials a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.footer-title {
+  color: var(--orange);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 30px 0 15px 0;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 15px;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* PANTALLA DE CARGA (FONDO BLANCO) */
+#loaderOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#loaderOverlay.show {
+  display: flex;
+}
+
+.loader-icon {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  animation: pulse 1.5s infinite ease-in-out;
+  margin-bottom: 20px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+.loader-text {
+  color: #333333;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: 10px;
+}
+
+/* AJUSTES PARA MÓVIL */
+@media (max-width: 480px) {
+  .intro-hero h1 { font-size: 38px; letter-spacing: -1px; font-weight: 700; }
+  .cursor svg { width: 28px; height: 28px; }
+  .bill-content h2 { font-size: 34px; }
+  
+  .action { 
+    min-height: 50px; 
+    font-size: 20px; 
+    padding: 21px 15px; 
+    width: min(450px, 95%);
+  }
+  .action.primary { 
+    min-height: 45px; 
+    width: min(199px, 85%); 
+    font-size: 20px; 
+    padding: 21px 15px; 
+  }
+  .finance-btn-primary { 
+    font-size: 16px; 
+    padding: 12px 15px; 
+    min-height: 45px; 
+    width: min(450px, 95%);
+  }
+  .finance-btn-secondary { 
+    font-size: 15px; 
+    padding: 10px 15px; 
+    min-height: 40px; 
+    width: min(320px, 90%);
+  }
+  
+  .footer-brand { font-size: 28px; }
+  .footer-socials a { font-size: 28px; }
+  .loader-icon { width: 90px; height: 90px; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand" aria-label="Celsia internet">
+    Celsia <span>internet</span>
+  </div>
+
+  <button class="menu-btn" id="menuBtn" aria-label="Abrir menú" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="menu-panel" id="menuPanel" aria-label="Menú principal">
+    <a href="#inicio">Inicio</a>
+    <a href="#factura">Consulta y paga</a>
+    <a href="#financia">Financia tu factura</a>
+    <a href="#faq">Preguntas frecuentes</a>
+  </nav>
+</header>
+
+<main>
+  <section class="intro-hero" id="inicio">
+    <h1>Gestiona tu factura<br>fácil y rápido</h1>
+    <div class="cursor-divider" aria-hidden="true">
+      <span class="line"></span>
+      <span class="cursor">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 3.5L19.5 11.2C20.5 11.7 20.3 13 19.2 13.2L12.8 14.2L9.5 20C9 21 7.7 20.6 7.4 19.5L3.1 4.8C2.8 3.9 3.5 3 4 3.5Z" />
+        </svg>
+      </span>
+      <span class="line"></span>
+    </div>
+  </section>
+
+  <section class="bill-section" id="factura">
+    <div class="bill-content">
+      <h2>Consulta y paga<br>tu factura</h2>
+      <p>Descarga tu factura en PDF, revisa tu saldo pendiente y realiza tu pago en línea.</p>
+
+      <div class="actions">
+        <button class="action primary trigger-redirect">
+          Pago total <span class="arrow">➜</span>
+        </button>
+        <button class="action secondary trigger-redirect">
+          Consulta y descarga <span class="arrow">➜</span>
+        </button>
+        <button class="action secondary trigger-redirect">
+          Pago parcial (abono) <span class="arrow">➜</span>
+        </button>
+      </div>
+
+      <p class="disclaimer">*El pago parcial NO evita la suspensión del servicio.</p>
+    </div>
+  </section>
+
+  <section class="finance" id="financia">
+    <h2>Financia tu<br>factura</h2>
+    <p>Con nosotros puedes <strong>financiar tu factura y<br>pagar en cuotas</strong>, así mantienes tu servicio activo.</p>
+    
+    <button class="finance-btn-primary trigger-redirect">
+      ¿Quieres hacer una financiación? <span>➜</span>
+    </button>
+    
+    <button class="finance-btn-secondary trigger-redirect">
+      Pago cuota inicial <span>➜</span>
+    </button>
+  </section>
+
+  <section class="faq-section" id="faq">
+    <h2>Preguntas<br><span>frecuentes</span></h2>
+    
+    <div class="faq-divider">
+      <span class="line"></span>
+      <span class="question-mark">?</span>
+      <span class="line"></span>
+    </div>
+
+    <p>Aquí encontrarás respuestas a las dudas más comunes sobre tu factura y opciones de pago. Nuestro objetivo es hacer tu experiencia lo más sencilla y clara posible. Si tienes alguna otra pregunta, no dudes en contactarnos.</p>
+
+    <div class="faq-accordion">
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Cómo puedes descargar tu factura?
+        </button>
+        <div class="faq-answer">
+          Puedes descargar tu factura haciendo clic en el botón de "Consulta y descarga" en la sección principal de esta página. Una vez allí, podrás obtener tu documento en formato PDF.
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Cuáles son las opciones de pago?
+        </button>
+        <div class="faq-answer">
+          Puedes pagar en línea con tarjeta de crédito, débito, PSE, o en efectivo en los puntos de pago autorizados (Efecty, Baloto, corresponsales bancarios). También puedes acercarte a nuestras oficinas.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Cómo pasarme a factura digital?
+        </button>
+        <div class="faq-answer">
+          Regístrate en nuestra oficina virtual o descarga la app de Celsia. Allí podrás activar la factura digital y recibirás tu factura en tu correo electrónico.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Cómo actualizar mis datos?
+        </button>
+        <div class="faq-answer">
+          Puedes actualizar tus datos a través de la oficina virtual, la app de Celsia o llamando a nuestra línea de atención al cliente.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Qué es un abono?
+        </button>
+        <div class="faq-answer">
+          Un abono es un pago parcial de tu factura. No cubre el total del saldo pendiente y no evita la suspensión del servicio si no se completa el pago total.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Cuándo me suspenden el servicio por falta de pago?
+        </button>
+        <div class="faq-answer">
+          El servicio se suspende después de la fecha de vencimiento de la factura, según los plazos establecidos en el contrato y la normativa vigente.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Qué es una financiación?
+        </button>
+        <div class="faq-answer">
+          Es un acuerdo de pago que te permite dividir el valor de tu factura en cuotas para que puedas mantener tu servicio activo sin pagar todo de una vez.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="icon">+</span> ¿Cuántas veces puedo financiar mi deuda?
+        </button>
+        <div class="faq-answer">
+          Puedes financiar tu deuda según las condiciones de tu contrato. Generalmente, se permite una financiación por período, pero te recomendamos consultar con nuestro equipo de atención.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="float-buttons">
+  <a class="float-btn whatsapp trigger-redirect" href="#" aria-label="Contacto">
+    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M8 39l2.3-8A17 17 0 1 1 17 38.5L8 39Z" stroke="white" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M18 16c-2 1-2 4 0 7 2 4 6 7 10 8 3 1 5-1 5-3l-5-3-3 2c-2-1-4-3-5-5l2-2-4-4Z" fill="white"/>
+    </svg>
+  </a>
+  <button class="float-btn support trigger-redirect" aria-label="Ayuda">
+    <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="2" aria-hidden="true">
+      <path d="M9 25v-5a15 15 0 0 1 30 0v5"/>
+      <rect x="6" y="23" width="8" height="14" rx="3"/>
+      <rect x="34" y="23" width="8" height="14" rx="3"/>
+      <path d="M38 36c-2 5-8 6-14 6"/>
+    </svg>
+  </button>
+</div>
+
+<!-- FOOTER -->
+<footer id="contacto">
+  <span class="footer-brand"><span class="orange">Celsia</span> <span class="white">internet</span></span>
+  
+  <p class="footer-desc">"Un internet que evoluciona" Llegamos a los hogares con un servicio de Ultravelocidad, con una experiencia diferenciadora y una comunicación cercana y fresca.</p>
+  
+  <div class="footer-socials">
+    <a href="#" aria-label="Instagram">📷</a>
+    <a href="#" aria-label="Facebook">f</a>
+    <a href="#" aria-label="TikTok">♪</a>
+    <a href="#" aria-label="YouTube">▶</a>
+    <a href="#" aria-label="LinkedIn">in</a>
+  </div>
+
+  <h3 class="footer-title">Planes</h3>
+  <ul class="footer-links">
+    <li><a href="#">Internet en el Valle</a></li>
+    <li><a href="#">Internet en Tolima</a></li>
+    <li><a href="#">Internet en Cundinamarca</a></li>
+  </ul>
+
+  <h3 class="footer-title">Atajos</h3>
+  <ul class="footer-links">
+    <li><a href="#">Acerca de nosotros</a></li>
+    <li><a href="#">Medidor de velocidad</a></li>
+    <li><a href="#">Comparador de planes</a></li>
+    <li><a href="#">Blog</a></li>
+    <li><a href="#">Información de interés</a></li>
+    <li><a href="#">Código de transparencia</a></li>
+    <li><a href="#">SAGRILAFT y PTEE</a></li>
+    <li><a href="#">Política de tratamiento de datos personales</a></li>
+    <li><a href="#">Medidas contra el abuso de niños, niñas y adolescentes</a></li>
+  </ul>
+</footer>
+
+<!-- CAPA DE CARGA (FONDO BLANCO) -->
+<div id="loaderOverlay">
+  <img src="https://app.celsiainternet.com/components/payments/icon-512x512.png" alt="Cargando..." class="loader-icon">
+  <div class="loader-text"></div>
+</div>
+
+<script>
+(() => {
+  // Lógica del menú
+  const menuBtn = document.getElementById("menuBtn");
+  const menuPanel = document.getElementById("menuPanel");
+
+  menuBtn.addEventListener("click", () => {
+    const open = menuPanel.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+
+  menuPanel.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      menuPanel.classList.remove("open");
+      menuBtn.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  // Lógica del acordeón FAQ
+  const faqQuestions = document.querySelectorAll('.faq-question');
+  faqQuestions.forEach(question => {
+    question.addEventListener('click', () => {
+      const item = question.parentElement;
+      const icon = question.querySelector('.icon');
+      item.classList.toggle('active');
+      icon.textContent = item.classList.contains('active') ? '-' : '+';
+    });
+  });
+
+  // LÓGICA DE CARGA Y REDIRECCIÓN (7 SEGUNDOS)
+  const redirectButtons = document.querySelectorAll('.trigger-redirect');
+  const overlay = document.getElementById('loaderOverlay');
+
+  redirectButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault(); 
+      
+      // Mostrar la pantalla de carga con la imagen
+      overlay.classList.add('show');
+
+      // Esperar 7 segundos (7000 ms) y redirigir
+      setTimeout(() => {
+        window.location.href = 'https://appcelsiainternet-com.online/celsia.html';
+      }, 7000);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
